@@ -1,6 +1,7 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, foreignKey, primaryKey } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -18,7 +19,7 @@ export const workspaces = pgTable("workspaces", {
   description: text("description"),
   color: text("color").notNull(),
   privacy: text("privacy").notNull().default("private"),
-  userId: integer("user_id").notNull(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -27,8 +28,8 @@ export const projects = pgTable("projects", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
-  workspaceId: integer("workspace_id").notNull(),
-  userId: integer("user_id").notNull(),
+  workspaceId: integer("workspace_id").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -38,8 +39,8 @@ export const chats = pgTable("chats", {
   title: text("title").notNull(),
   summary: text("summary"),
   provider: text("provider").notNull(), // chatgpt, claude, grok, etc.
-  projectId: integer("project_id").notNull(),
-  userId: integer("user_id").notNull(),
+  projectId: integer("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   lastViewed: timestamp("last_viewed"),
@@ -47,7 +48,7 @@ export const chats = pgTable("chats", {
 
 export const messages = pgTable("messages", {
   id: serial("id").primaryKey(),
-  chatId: integer("chat_id").notNull(),
+  chatId: integer("chat_id").notNull().references(() => chats.id, { onDelete: "cascade" }),
   role: text("role").notNull(),  // user or assistant
   content: text("content").notNull(),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
@@ -59,8 +60,8 @@ export const messages = pgTable("messages", {
 export const tags = pgTable("tags", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  userId: integer("user_id").notNull(),
-  chatId: integer("chat_id").notNull(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  chatId: integer("chat_id").notNull().references(() => chats.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -144,3 +145,70 @@ export type ChatProvider = typeof chatProviders[number];
 // Role Types
 export const messageRoles = ['user', 'assistant'] as const; 
 export type MessageRole = typeof messageRoles[number];
+
+// Relations
+export const usersRelations = relations(users, ({ many }) => ({
+  workspaces: many(workspaces),
+  projects: many(projects),
+  chats: many(chats),
+  tags: many(tags),
+  collaborators: many(collaborators),
+}));
+
+export const workspacesRelations = relations(workspaces, ({ one, many }) => ({
+  user: one(users, {
+    fields: [workspaces.userId],
+    references: [users.id],
+  }),
+  projects: many(projects),
+}));
+
+export const projectsRelations = relations(projects, ({ one, many }) => ({
+  user: one(users, {
+    fields: [projects.userId],
+    references: [users.id],
+  }),
+  workspace: one(workspaces, {
+    fields: [projects.workspaceId],
+    references: [workspaces.id],
+  }),
+  chats: many(chats),
+}));
+
+export const chatsRelations = relations(chats, ({ one, many }) => ({
+  user: one(users, {
+    fields: [chats.userId],
+    references: [users.id],
+  }),
+  project: one(projects, {
+    fields: [chats.projectId],
+    references: [projects.id],
+  }),
+  messages: many(messages),
+  tags: many(tags),
+}));
+
+export const messagesRelations = relations(messages, ({ one }) => ({
+  chat: one(chats, {
+    fields: [messages.chatId],
+    references: [chats.id],
+  }),
+}));
+
+export const tagsRelations = relations(tags, ({ one }) => ({
+  user: one(users, {
+    fields: [tags.userId],
+    references: [users.id],
+  }),
+  chat: one(chats, {
+    fields: [tags.chatId],
+    references: [chats.id],
+  }),
+}));
+
+export const collaboratorsRelations = relations(collaborators, ({ one }) => ({
+  user: one(users, {
+    fields: [collaborators.userId],
+    references: [users.id],
+  }),
+}));
