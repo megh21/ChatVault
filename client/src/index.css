@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 95 7% 25%; /* #3E4C40 */
+  --primary-foreground: 211 100% 99%;
+  --secondary: 178 20% 50%; /* #66999B */
+  --secondary-foreground: 0 0% 100%;
+  --accent: 12 50% 66%; /* #D98B79 */
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 20 14.3% 4.1%;
+  --radius: 0.5rem;
+
+  /* Add our custom colors */
+  --highlight: 239 83% 93%; /* #DBDCFC */
+  --neutral-light: 28 100% 86%; /* #FFD4B7 */
+  --neutral-dark: 18 29% 51%; /* #A47160 */
+  
+  /* Chart colors */
+  --chart-1: 178 20% 50%; /* Secondary */
+  --chart-2: 12 50% 66%; /* Accent */
+  --chart-3: 239 83% 93%; /* Highlight */
+  --chart-4: 28 100% 86%; /* Neutral Light */
+  --chart-5: 18 29% 51%; /* Neutral Dark */
+  
+  /* Sidebar colors */
+  --sidebar-background: 95 7% 25%; /* Primary */
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-primary: 95 7% 25%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 12 50% 66%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 95 7% 30%;
+  --sidebar-ring: 95 7% 40%;
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 95 7% 25%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 178 20% 50%;
+  --secondary-foreground: 0 0% 100%;
+  --accent: 12 50% 66%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+.ai-message {
+  border-left: 3px solid hsl(var(--secondary));
+}
+
+.user-message {
+  border-left: 3px solid hsl(var(--accent));
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
