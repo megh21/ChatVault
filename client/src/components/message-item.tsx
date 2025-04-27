@@ -156,76 +156,79 @@ export function MessageItem({ message, onEditSuccess, isLastItem = false }: Mess
         )}
       </div>
       
-      {isEditing ? (
-        <div className="relative">
-          {/* Google Docs style editor */}
-          <Textarea
-            ref={editorRef}
-            value={editedContent}
-            onChange={(e) => {
-              setEditedContent(e.target.value);
-              // Auto-resize the textarea
-              e.target.style.height = 'auto';
-              e.target.style.height = `${e.target.scrollHeight}px`;
-            }}
-            onKeyDown={handleKeyDown}
-            className="min-h-[100px] text-gray-700 border-gray-200 border-2 focus:border-blue-400 focus:ring-1 focus:ring-blue-400 p-4 rounded-md shadow-sm w-full resize-none"
-            style={{ fontSize: '16px', lineHeight: '1.6' }}
-          />
-          
-          {/* Editing toolbar - Google Docs style */}
-          <div className="bg-white border border-gray-200 rounded-md shadow-sm p-1 flex items-center gap-1 absolute -top-10 left-1/2 transform -translate-x-1/2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-gray-600 hover:bg-gray-100 rounded-md"
-              title="Text formatting"
-            >
-              <AlignLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-gray-600 hover:bg-gray-100 rounded-md"
-              title="Insert image"
-            >
-              <Image className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-gray-600 hover:bg-gray-100 rounded-md"
-              title="Insert link"
-            >
-              <LinkIcon className="h-4 w-4" />
-            </Button>
-            <div className="h-5 border-r border-gray-300 mx-1"></div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCancelEdit}
-              disabled={isSaving}
-              className="text-gray-700 hover:bg-gray-100"
-            >
-              Cancel
-            </Button>
-            <Button
-              size="sm"
-              className="bg-blue-500 hover:bg-blue-600 text-white"
-              onClick={handleSaveEdit}
-              disabled={isSaving || !editedContent.trim()}
-            >
-              {isSaving ? "Saving..." : "Save"}
-            </Button>
+      {/* The content is always visible, but when editing we show a content-editable version */}
+      <div className="relative">
+        {isEditing ? (
+          <>
+            {/* Editable content - directly editing in the document */}
+            <div 
+              className="min-h-[100px] text-gray-800 prose prose-lg max-w-none leading-relaxed p-4 focus:outline-none border-l-2 border-blue-400 pl-4 bg-blue-50/30"
+              ref={editorRef as any}
+              contentEditable={true}
+              suppressContentEditableWarning={true}
+              onInput={(e) => setEditedContent(e.currentTarget.innerText)}
+              dangerouslySetInnerHTML={{ __html: editedContent }}
+              onKeyDown={handleKeyDown}
+              style={{ fontSize: '16px', lineHeight: '1.6' }}
+            />
+            
+            {/* Floating toolbar that follows as you scroll */}
+            <div className="bg-white border border-gray-200 rounded-md shadow-sm p-1 flex items-center gap-1 sticky top-2 z-10 w-fit mx-auto">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-gray-600 hover:bg-gray-100 rounded-md"
+                title="Text formatting"
+              >
+                <AlignLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-gray-600 hover:bg-gray-100 rounded-md"
+                title="Insert image"
+              >
+                <Image className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-gray-600 hover:bg-gray-100 rounded-md"
+                title="Insert link"
+              >
+                <LinkIcon className="h-4 w-4" />
+              </Button>
+              <div className="h-5 border-r border-gray-300 mx-1"></div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCancelEdit}
+                disabled={isSaving}
+                className="text-gray-700 hover:bg-gray-100"
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                className="bg-blue-500 hover:bg-blue-600 text-white"
+                onClick={handleSaveEdit}
+                disabled={isSaving || !editedContent.trim()}
+              >
+                {isSaving ? "Saving..." : "Save"}
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div 
+            className="text-gray-800 prose prose-lg max-w-none leading-relaxed cursor-text"
+            onClick={handleEdit} // Click anywhere to start editing
+          >
+            <ReactMarkdown>
+              {message.content}
+            </ReactMarkdown>
           </div>
-        </div>
-      ) : (
-        <div className="text-gray-800 prose prose-lg max-w-none leading-relaxed">
-          <ReactMarkdown>
-            {message.content}
-          </ReactMarkdown>
-        </div>
-      )}
+        )}
+      </div>
     </motion.div>
   );
 }

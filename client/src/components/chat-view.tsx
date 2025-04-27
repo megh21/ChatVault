@@ -29,36 +29,7 @@ interface ChatViewProps {
 
 export function ChatView({ chat, messages, onRefresh, isLoading = false }: ChatViewProps) {
   const { toast } = useToast();
-  const [newMessage, setNewMessage] = useState("");
-  const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
-  const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
-    
-    setIsSending(true);
-    try {
-      await apiRequest("POST", `/api/chats/${chat.id}/messages`, {
-        role: "user",
-        content: newMessage
-      });
-      
-      setNewMessage("");
-      onRefresh();
-      toast({
-        title: "Message sent",
-        description: "Your message has been added to the chat.",
-      });
-    } catch (error) {
-      toast({
-        title: "Failed to send message",
-        description: "There was a problem adding your message.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSending(false);
-    }
-  };
   
   // Scroll to bottom when messages change
   React.useEffect(() => {
@@ -237,61 +208,40 @@ export function ChatView({ chat, messages, onRefresh, isLoading = false }: ChatV
           ))}
           <div ref={messagesEndRef} />
           
-          {/* Floating Add Content Button - like Google Docs "+" button */}
+          {/* Floating add new section button */}
           <div className="fixed bottom-6 right-6 z-10">
             <Button
-              className="rounded-full h-14 w-14 bg-secondary text-white hover:bg-secondary/90 shadow-md"
-              onClick={() => {
-                if (messagesEndRef.current) {
-                  messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-                }
-                const textarea = document.getElementById('new-content-textarea');
-                if (textarea) {
-                  textarea.focus();
+              className="rounded-full h-14 w-14 bg-secondary text-white hover:bg-secondary/90 shadow-md flex items-center justify-center"
+              onClick={async () => {
+                try {
+                  await apiRequest("POST", `/api/chats/${chat.id}/messages`, {
+                    role: "user",
+                    content: "New section"
+                  });
+                  
+                  onRefresh();
+                  toast({
+                    title: "Section added",
+                    description: "A new section has been added to the document. Click on it to edit.",
+                  });
+                  
+                  // Scroll to the new section after a brief delay to allow render
+                  setTimeout(() => {
+                    if (messagesEndRef.current) {
+                      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }, 100);
+                } catch (error) {
+                  toast({
+                    title: "Failed to add section",
+                    description: "There was a problem adding a new section.",
+                    variant: "destructive"
+                  });
                 }
               }}
             >
               <Plus className="h-6 w-6" />
             </Button>
-          </div>
-          
-          {/* Append Content Area */}
-          <div className="mt-8 border-t border-gray-200 pt-4">
-            <Textarea
-              id="new-content-textarea"
-              placeholder="Add more content to this document..."
-              className="min-h-[100px] p-3 resize-none rounded-md border-gray-300 focus:border-secondary focus:ring-secondary text-gray-700 w-full"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-            />
-            <div className="flex justify-between mt-3">
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="rounded-md text-gray-500 hover:bg-gray-100"
-                >
-                  <PaperclipIcon className="h-4 w-4 mr-1" /> Attach
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="rounded-md text-gray-500 hover:bg-gray-100"
-                >
-                  <Code className="h-4 w-4 mr-1" /> Format
-                </Button>
-              </div>
-              <Button
-                type="button"
-                className="bg-secondary hover:bg-secondary/90 text-white"
-                onClick={handleSendMessage}
-                disabled={isSending || !newMessage.trim()}
-              >
-                {isSending ? "Adding..." : "Add to Document"}
-              </Button>
-            </div>
           </div>
         </div>
       </div>
