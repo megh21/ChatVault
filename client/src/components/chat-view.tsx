@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { motion } from "framer-motion";
-import { Chat, Message, Tag } from "@shared/schema";
+import { Chat, Message, Tag } from "../../shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { formatDateTime, getProviderIcon, getProviderName, getTagColor } from "@/lib/utils";
 import { fadeIn } from "@/lib/framer-animations";
@@ -159,7 +159,7 @@ export function ChatView({ chat, messages, onRefresh, isLoading = false }: ChatV
           )}
           
           <div className="flex items-center gap-1 ml-auto">
-            {chat.tags && chat.tags.map((tag) => (
+            {chat.tags && chat.tags.map((tag: Tag) => (
               <span
                 key={tag.id}
                 className={`px-2 py-0.5 rounded-full text-xs font-medium ${getTagColor(tag.name)}`}
