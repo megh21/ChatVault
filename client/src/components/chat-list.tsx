@@ -144,45 +144,46 @@ function ChatListItem({ chat, isSelected, projectId }: ChatListItemProps) {
         isSelected ? "bg-highlight/10" : "hover:bg-gray-50"
       )}
     >
-      <Link href={`/project/${projectId}/chat/${chat.id}`}>
-        <a className="block">
-          <div className="flex items-start justify-between">
-            <div>
-              <h3 className="font-medium text-gray-900">{chat.title}</h3>
-              <p className="text-xs text-gray-500 mt-1">
-                <i className={cn(providerIcon, "mr-1 inline-block")}></i>
-                {providerName} • {formatRelativeTime(chat.createdAt)}
-              </p>
-            </div>
-            <div className="flex flex-col items-end">
-              <span className="text-xs text-gray-400">{formatTime(chat.updatedAt)}</span>
-              {chat.tags && chat.tags.length > 0 && (
-                <div className="flex mt-1 gap-1.5 flex-wrap justify-end">
-                  {chat.tags.slice(0, 2).map((tag) => (
-                    <span 
-                      key={tag.id} 
-                      className={cn(
-                        "px-1.5 py-0.5 rounded-full text-xs font-medium",
-                        getTagColor(tag.name)
-                      )}
-                    >
-                      {tag.name}
-                    </span>
-                  ))}
-                  {chat.tags.length > 2 && (
-                    <span className="px-1.5 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600 font-medium">
-                      +{chat.tags.length - 2}
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
+      <div 
+        className="block cursor-pointer" 
+        onClick={() => window.location.href = `/project/${projectId}/chat/${chat.id}`}
+      >
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="font-medium text-gray-900">{chat.title}</h3>
+            <p className="text-xs text-gray-500 mt-1">
+              <i className={cn(providerIcon, "mr-1 inline-block")}></i>
+              {providerName} • {formatRelativeTime(chat.createdAt)}
+            </p>
           </div>
-          <p className="text-xs text-gray-600 mt-2 line-clamp-2">
-            {chat.summary ? truncateText(chat.summary, 120) : "No summary available"}
-          </p>
-        </a>
-      </Link>
+          <div className="flex flex-col items-end">
+            <span className="text-xs text-gray-400">{formatTime(chat.updatedAt)}</span>
+            {chat.tags && chat.tags.length > 0 && (
+              <div className="flex mt-1 gap-1.5 flex-wrap justify-end">
+                {chat.tags.slice(0, 2).map((tag) => (
+                  <span 
+                    key={tag.id} 
+                    className={cn(
+                      "px-1.5 py-0.5 rounded-full text-xs font-medium",
+                      getTagColor(tag.name)
+                    )}
+                  >
+                    {tag.name}
+                  </span>
+                ))}
+                {chat.tags.length > 2 && (
+                  <span className="px-1.5 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600 font-medium">
+                    +{chat.tags.length - 2}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+        <p className="text-xs text-gray-600 mt-2 line-clamp-2">
+          {chat.summary ? truncateText(chat.summary, 120) : "No summary available"}
+        </p>
+      </div>
     </motion.div>
   );
 }
