@@ -1,0 +1,32 @@
+Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <a> a 
+    at a
+    at a
+    at https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=9f2f374b:337:18
+    at li
+    at MotionComponent (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=1df69e63:6536:40)
+    at ul
+    at MotionComponent (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=1df69e63:6536:40)
+    at div
+    at MotionComponent (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=1df69e63:6536:40)
+    at div
+    at div
+    at https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-BOL2CCOG.js?v=cd9cabc0:42:13
+    at https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-scroll-area.js?v=59624adb:114:13
+    at div
+    at https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-BOL2CCOG.js?v=cd9cabc0:42:13
+    at Provider (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-E7IAXTU4.js?v=cd9cabc0:38:15)
+    at https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-scroll-area.js?v=59624adb:52:7
+    at _c (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/src/components/ui/scroll-area.tsx:21:11)
+    at aside
+    at MotionComponent (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=1df69e63:6536:40)
+    at PresenceChild (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=1df69e63:7742:24)
+    at AnimatePresence (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=1df69e63:7800:26)
+    at Sidebar (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/src/components/sidebar.tsx:28:3)
+    at div
+    at Layout (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/src/components/layout.tsx:31:26)
+    at Provider (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-E7IAXTU4.js?v=cd9cabc0:38:15)
+    at TooltipProvider (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=05b0bc67:63:5)
+    at V (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/next-themes.js?v=04376f24:44:25)
+    at J (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/next-themes.js?v=04376f24:42:18)
+    at QueryClientProvider (https://c676f6d4-a43f-44fd-932d-e7200557bde7-00-2s9uysdhad5h8.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cd467f84:2805:3)
+    at App

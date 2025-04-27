@@ -224,71 +224,77 @@ export function ChatView({ chat, messages, onRefresh, isLoading = false }: ChatV
         </motion.div>
       )}
       
-      {/* Chat Messages */}
-      <div className="flex-1 px-6 py-4 space-y-6 overflow-y-auto">
-        {messages.map((message, index) => (
-          <MessageItem
-            key={message.id}
-            message={message}
-            onEditSuccess={onRefresh}
-          />
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
-      
-      {/* Message Input Area */}
-      <motion.div
-        className="bg-white sticky bottom-0 pt-2 pb-4 px-6"
-        initial="hidden"
-        animate="visible"
-        variants={slideUp}
-      >
-        <div className="border border-gray-300 rounded-lg flex flex-col overflow-hidden">
-          <Textarea
-            placeholder="Add to this conversation..."
-            className="min-h-[100px] max-h-[200px] p-3 resize-none outline-none text-gray-700 border-none"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-          />
-          <div className="flex items-center justify-between px-3 py-2 border-t border-gray-200 bg-gray-50">
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="rounded-md h-8 w-8 text-gray-500 hover:bg-gray-100"
-              >
-                <PaperclipIcon className="h-5 w-5" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="rounded-md h-8 w-8 text-gray-500 hover:bg-gray-100"
-              >
-                <SmileIcon className="h-5 w-5" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="rounded-md h-8 w-8 text-gray-500 hover:bg-gray-100"
-              >
-                <Code className="h-5 w-5" />
-              </Button>
-            </div>
+      {/* Document Content Area - Inspired by Google Docs */}
+      <div className="flex-1 px-6 py-4 overflow-y-auto h-full" style={{ overflowY: 'auto' }}>
+        <div className="max-w-4xl mx-auto bg-white shadow-sm rounded-md p-6 mb-12">
+          {messages.map((message, index) => (
+            <MessageItem
+              key={message.id}
+              message={message}
+              onEditSuccess={onRefresh}
+              isLastItem={index === messages.length - 1}
+            />
+          ))}
+          <div ref={messagesEndRef} />
+          
+          {/* Floating Add Content Button - like Google Docs "+" button */}
+          <div className="fixed bottom-6 right-6 z-10">
             <Button
-              type="button"
-              className="bg-secondary hover:bg-secondary/90 text-white"
-              onClick={handleSendMessage}
-              disabled={isSending || !newMessage.trim()}
+              className="rounded-full h-14 w-14 bg-secondary text-white hover:bg-secondary/90 shadow-md"
+              onClick={() => {
+                if (messagesEndRef.current) {
+                  messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+                }
+                const textarea = document.getElementById('new-content-textarea');
+                if (textarea) {
+                  textarea.focus();
+                }
+              }}
             >
-              {isSending ? "Sending..." : "Send"}
-              {!isSending && <SendIcon className="ml-2 h-4 w-4" />}
+              <Plus className="h-6 w-6" />
             </Button>
           </div>
+          
+          {/* Append Content Area */}
+          <div className="mt-8 border-t border-gray-200 pt-4">
+            <Textarea
+              id="new-content-textarea"
+              placeholder="Add more content to this document..."
+              className="min-h-[100px] p-3 resize-none rounded-md border-gray-300 focus:border-secondary focus:ring-secondary text-gray-700 w-full"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+            />
+            <div className="flex justify-between mt-3">
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-md text-gray-500 hover:bg-gray-100"
+                >
+                  <PaperclipIcon className="h-4 w-4 mr-1" /> Attach
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-md text-gray-500 hover:bg-gray-100"
+                >
+                  <Code className="h-4 w-4 mr-1" /> Format
+                </Button>
+              </div>
+              <Button
+                type="button"
+                className="bg-secondary hover:bg-secondary/90 text-white"
+                onClick={handleSendMessage}
+                disabled={isSending || !newMessage.trim()}
+              >
+                {isSending ? "Adding..." : "Add to Document"}
+              </Button>
+            </div>
+          </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
