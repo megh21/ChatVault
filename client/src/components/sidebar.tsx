@@ -31,9 +31,14 @@ export function Sidebar({
   onCreateProject,
   user
 }: SidebarProps) {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
   const [activeSection, setActiveSection] = useState<string>("navigation");
+  
+  // Navigation helper function
+  const navigate = (path: string) => {
+    setLocation(path);
+  };
   
   return (
     <AnimatePresence>
@@ -86,56 +91,60 @@ export function Sidebar({
               </h3>
               <motion.ul variants={staggerContainer}>
                 <motion.li variants={listItem}>
-                  <Link href="/">
-                    <a className={cn(
-                      "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
+                  <div 
+                    onClick={() => navigate("/")}
+                    className={cn(
+                      "flex items-center px-3 py-2 text-sm rounded-md transition-colors cursor-pointer",
                       location === "/" 
                         ? "bg-primary/20 font-medium" 
                         : "text-gray-300 hover:bg-primary/20"
-                    )}>
-                      <HomeIcon className="mr-2 h-4 w-4" />
-                      <span>Home</span>
-                    </a>
-                  </Link>
+                    )}
+                  >
+                    <HomeIcon className="mr-2 h-4 w-4" />
+                    <span>Home</span>
+                  </div>
                 </motion.li>
                 <motion.li variants={listItem}>
-                  <Link href="/search">
-                    <a className={cn(
-                      "flex items-center px-3 py-2 text-sm rounded-md mt-1 transition-colors",
+                  <div
+                    onClick={() => navigate("/search")}
+                    className={cn(
+                      "flex items-center px-3 py-2 text-sm rounded-md mt-1 transition-colors cursor-pointer",
                       location === "/search" 
                         ? "bg-primary/20 font-medium" 
                         : "text-gray-300 hover:bg-primary/20"
-                    )}>
-                      <SearchIcon className="mr-2 h-4 w-4" />
-                      <span>Search</span>
-                    </a>
-                  </Link>
+                    )}
+                  >
+                    <SearchIcon className="mr-2 h-4 w-4" />
+                    <span>Search</span>
+                  </div>
                 </motion.li>
                 <motion.li variants={listItem}>
-                  <Link href="/favorites">
-                    <a className={cn(
-                      "flex items-center px-3 py-2 text-sm rounded-md mt-1 transition-colors",
+                  <div
+                    onClick={() => navigate("/favorites")}
+                    className={cn(
+                      "flex items-center px-3 py-2 text-sm rounded-md mt-1 transition-colors cursor-pointer",
                       location === "/favorites" 
                         ? "bg-primary/20 font-medium" 
                         : "text-gray-300 hover:bg-primary/20"
-                    )}>
-                      <StarIcon className="mr-2 h-4 w-4" />
-                      <span>Favorites</span>
-                    </a>
-                  </Link>
+                    )}
+                  >
+                    <StarIcon className="mr-2 h-4 w-4" />
+                    <span>Favorites</span>
+                  </div>
                 </motion.li>
                 <motion.li variants={listItem}>
-                  <Link href="/recent">
-                    <a className={cn(
-                      "flex items-center px-3 py-2 text-sm rounded-md mt-1 transition-colors",
+                  <div
+                    onClick={() => navigate("/recent")}
+                    className={cn(
+                      "flex items-center px-3 py-2 text-sm rounded-md mt-1 transition-colors cursor-pointer",
                       location === "/recent" 
                         ? "bg-primary/20 font-medium" 
                         : "text-gray-300 hover:bg-primary/20"
-                    )}>
-                      <ClockIcon className="mr-2 h-4 w-4" />
-                      <span>Recent</span>
-                    </a>
-                  </Link>
+                    )}
+                  >
+                    <ClockIcon className="mr-2 h-4 w-4" />
+                    <span>Recent</span>
+                  </div>
                 </motion.li>
               </motion.ul>
             </motion.div>
@@ -169,20 +178,21 @@ export function Sidebar({
                     variants={listItem}
                     className="px-3 py-2 text-sm hover:bg-primary/20 rounded-md cursor-pointer transition-colors"
                   >
-                    <Link href={`/workspace/${workspace.id}`}>
-                      <a className="flex items-center">
-                        <div className={cn(
-                          "w-2 h-2 rounded-full mr-2",
-                          workspace.color === "accent" && "bg-accent",
-                          workspace.color === "secondary" && "bg-secondary",
-                          workspace.color === "highlight" && "bg-highlight",
-                          workspace.color === "neutralLight" && "bg-neutral-light",
-                          workspace.color === "neutralDark" && "bg-neutral-dark",
-                          workspace.color === "primary" && "bg-primary/60"
-                        )}></div>
-                        <span className="truncate">{workspace.name}</span>
-                      </a>
-                    </Link>
+                    <div 
+                      onClick={() => navigate(`/workspace/${workspace.id}`)}
+                      className="flex items-center cursor-pointer"
+                    >
+                      <div className={cn(
+                        "w-2 h-2 rounded-full mr-2",
+                        workspace.color === "accent" && "bg-accent",
+                        workspace.color === "secondary" && "bg-secondary",
+                        workspace.color === "highlight" && "bg-highlight",
+                        workspace.color === "neutralLight" && "bg-neutral-light",
+                        workspace.color === "neutralDark" && "bg-neutral-dark",
+                        workspace.color === "primary" && "bg-primary/60"
+                      )}></div>
+                      <span className="truncate">{workspace.name}</span>
+                    </div>
                   </motion.div>
                 ))}
                 
@@ -222,12 +232,13 @@ export function Sidebar({
                       variants={listItem}
                       className="px-3 py-2 text-sm hover:bg-primary/20 rounded-md cursor-pointer transition-colors"
                     >
-                      <Link href={`/project/${project.id}`}>
-                        <a className="flex items-center">
-                          <FolderIcon className="mr-2 h-4 w-4 text-neutral-light" />
-                          <span className="truncate">{project.name}</span>
-                        </a>
-                      </Link>
+                      <div 
+                        onClick={() => navigate(`/project/${project.id}`)}
+                        className="flex items-center cursor-pointer"
+                      >
+                        <FolderIcon className="mr-2 h-4 w-4 text-neutral-light" />
+                        <span className="truncate">{project.name}</span>
+                      </div>
                     </motion.div>
                   ))
                 )}
