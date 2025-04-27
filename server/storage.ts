@@ -108,7 +108,7 @@ export class MemStorage implements IStorage {
     // Create a demo user
     const user = await this.createUser({
       email: "user@example.com",
-      passwordHash: "demo", // Not used for demo
+      username: "demouser", 
       displayName: "Demo User"
     });
     

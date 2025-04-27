@@ -261,38 +261,37 @@ function SearchResultCard({ chat }: SearchResultCardProps) {
     <motion.div
       variants={listItem}
       className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+      onClick={() => window.location.href = `/project/${chat.projectId}/chat/${chat.id}`}
     >
-      <Link href={`/project/${chat.projectId}/chat/${chat.id}`}>
-        <a className="block p-5">
-          <div className="flex items-start justify-between">
-            <h3 className="font-semibold text-lg text-gray-900">{chat.title}</h3>
-            <div className="flex items-center text-sm text-gray-500">
-              <i className={`${providerIcon} mr-1`}></i>
-              {providerName}
-            </div>
+      <div className="block p-5 cursor-pointer">
+        <div className="flex items-start justify-between">
+          <h3 className="font-semibold text-lg text-gray-900">{chat.title}</h3>
+          <div className="flex items-center text-sm text-gray-500">
+            <i className={`${providerIcon} mr-1`}></i>
+            {providerName}
           </div>
-          
-          {chat.summary && (
-            <p className="mt-2 text-gray-600 text-sm line-clamp-2">{chat.summary}</p>
-          )}
-          
-          <div className="mt-4 flex items-center justify-between">
-            <div className="flex flex-wrap gap-1.5">
-              {chat.tags.map((tag) => (
-                <span 
-                  key={tag.id} 
-                  className={`px-2 py-0.5 rounded-full text-xs font-medium ${getTagColor(tag.name)}`}
-                >
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-            <div className="text-xs text-gray-500">
-              {formatRelativeTime(chat.updatedAt)}
-            </div>
+        </div>
+        
+        {chat.summary && (
+          <p className="mt-2 text-gray-600 text-sm line-clamp-2">{chat.summary}</p>
+        )}
+        
+        <div className="mt-4 flex items-center justify-between">
+          <div className="flex flex-wrap gap-1.5">
+            {chat.tags.map((tag) => (
+              <span 
+                key={tag.id} 
+                className={`px-2 py-0.5 rounded-full text-xs font-medium ${getTagColor(tag.name)}`}
+              >
+                {tag.name}
+              </span>
+            ))}
           </div>
-        </a>
-      </Link>
+          <div className="text-xs text-gray-500">
+            {formatRelativeTime(chat.updatedAt)}
+          </div>
+        </div>
+      </div>
     </motion.div>
   );
 }

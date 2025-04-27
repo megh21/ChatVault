@@ -115,6 +115,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Workspace routes
   app.get('/api/workspaces', isAuthenticated, async (req, res) => {
     const userId = req.session.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
     const workspaces = await storage.getWorkspacesByUserId(userId);
     res.json({ workspaces });
   });
