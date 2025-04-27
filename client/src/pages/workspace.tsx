@@ -284,50 +284,51 @@ export default function Workspace() {
           >
             {filteredProjects.map((project) => (
               <motion.div key={project.id} variants={listItem}>
-                <Link href={`/project/${project.id}`}>
-                  <a className="block h-full">
-                    <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow h-full">
-                      <div className="p-5 flex flex-col h-full">
-                        <h3 className="font-semibold text-lg text-gray-900">{project.name}</h3>
-                        
-                        {project.description && (
-                          <p className="mt-1 text-sm text-gray-600">{project.description}</p>
+                <div 
+                  onClick={() => window.location.href = `/project/${project.id}`}
+                  className="block h-full cursor-pointer"
+                >
+                  <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow h-full">
+                    <div className="p-5 flex flex-col h-full">
+                      <h3 className="font-semibold text-lg text-gray-900">{project.name}</h3>
+                      
+                      {project.description && (
+                        <p className="mt-1 text-sm text-gray-600">{project.description}</p>
+                      )}
+                      
+                      <div className="mt-4 pt-4 border-t border-gray-100 flex-grow">
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Recent Chats</h4>
+                        {project.chats && project.chats.length > 0 ? (
+                          <div className="space-y-2">
+                            {project.chats.slice(0, 2).map((chat) => (
+                              <div 
+                                key={chat.id} 
+                                className="text-sm p-2 rounded-md hover:bg-gray-50 transition-colors"
+                              >
+                                <div className="font-medium truncate">{chat.title}</div>
+                                <div className="text-xs text-gray-500 mt-1">
+                                  {chat.provider.charAt(0).toUpperCase() + chat.provider.slice(1)} • Last viewed {formatDate(chat.lastViewed || chat.updatedAt)}
+                                </div>
+                              </div>
+                            ))}
+                            
+                            {project.chats.length > 2 && (
+                              <div className="text-xs text-secondary mt-1">
+                                + {project.chats.length - 2} more chats
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="text-sm text-gray-500">No chats yet</div>
                         )}
-                        
-                        <div className="mt-4 pt-4 border-t border-gray-100 flex-grow">
-                          <h4 className="text-sm font-medium text-gray-700 mb-2">Recent Chats</h4>
-                          {project.chats && project.chats.length > 0 ? (
-                            <div className="space-y-2">
-                              {project.chats.slice(0, 2).map((chat) => (
-                                <div 
-                                  key={chat.id} 
-                                  className="text-sm p-2 rounded-md hover:bg-gray-50 transition-colors"
-                                >
-                                  <div className="font-medium truncate">{chat.title}</div>
-                                  <div className="text-xs text-gray-500 mt-1">
-                                    {chat.provider.charAt(0).toUpperCase() + chat.provider.slice(1)} • Last viewed {formatDate(chat.lastViewed || chat.updatedAt)}
-                                  </div>
-                                </div>
-                              ))}
-                              
-                              {project.chats.length > 2 && (
-                                <div className="text-xs text-secondary mt-1">
-                                  + {project.chats.length - 2} more chats
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="text-sm text-gray-500">No chats yet</div>
-                          )}
-                        </div>
-                        
-                        <div className="mt-4 text-xs text-gray-500">
-                          Created on {formatDate(project.createdAt)}
-                        </div>
+                      </div>
+                      
+                      <div className="mt-4 text-xs text-gray-500">
+                        Created on {formatDate(project.createdAt)}
                       </div>
                     </div>
-                  </a>
-                </Link>
+                  </div>
+                </div>
               </motion.div>
             ))}
             
