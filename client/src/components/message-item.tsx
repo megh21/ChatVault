@@ -45,7 +45,16 @@ export function MessageItem({ message, onEditSuccess, isLastItem = false }: Mess
     setTimeout(() => {
       if (editorRef.current) {
         editorRef.current.focus();
-        editorRef.current.selectionStart = editorRef.current.value.length;
+        // Set cursor at end - different handling for contentEditable
+        const range = document.createRange();
+        const sel = window.getSelection();
+        if (editorRef.current.childNodes.length > 0) {
+          const lastNode = editorRef.current.childNodes[editorRef.current.childNodes.length - 1];
+          range.setStart(lastNode, lastNode.textContent?.length || 0);
+          range.collapse(true);
+          sel?.removeAllRanges();
+          sel?.addRange(range);
+        }
       }
     }, 50);
   };

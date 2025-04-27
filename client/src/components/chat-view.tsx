@@ -1,24 +1,20 @@
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import { motion } from "framer-motion";
 import { Chat, Message, Tag } from "@shared/schema";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { MessageItem } from "@/components/message-item";
-import { fadeIn, slideUp } from "@/lib/framer-animations";
-import { apiRequest } from "@/lib/queryClient";
-import { formatDateTime, getProviderIcon, getProviderName, getTagColor } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Edit,
-  Download,
-  MoreHorizontal,
-  Clock,
-  Plus,
-  PaperclipIcon,
-  SmileIcon,
-  Code,
-  SendIcon
+import { formatDateTime, getProviderIcon, getProviderName, getTagColor } from "@/lib/utils";
+import { fadeIn } from "@/lib/framer-animations";
+import { Button } from "@/components/ui/button";
+import { apiRequest } from "@/lib/queryClient";
+import MessageItem from "@/components/message-item";
+import { 
+  Clock, 
+  Download, 
+  Edit, 
+  MoreHorizontal, 
+  Plus
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 interface ChatViewProps {
   chat: Chat & { tags: Tag[] };
@@ -196,17 +192,19 @@ export function ChatView({ chat, messages, onRefresh, isLoading = false }: ChatV
       )}
       
       {/* Document Content Area - Inspired by Google Docs */}
-      <div className="flex-1 px-6 py-4 overflow-y-auto h-full" style={{ overflowY: 'auto' }}>
-        <div className="max-w-4xl mx-auto bg-white shadow-sm rounded-md p-6 mb-12">
-          {messages.map((message, index) => (
-            <MessageItem
-              key={message.id}
-              message={message}
-              onEditSuccess={onRefresh}
-              isLastItem={index === messages.length - 1}
-            />
-          ))}
-          <div ref={messagesEndRef} />
+      <div className="flex-1 overflow-y-auto" style={{ height: 'calc(100vh - 150px)' }}>
+        <div className="px-6 py-4">
+          <div className="max-w-4xl mx-auto bg-white shadow-sm rounded-md p-6 mb-12">
+            {messages.map((message, index) => (
+              <MessageItem
+                key={message.id}
+                message={message}
+                onEditSuccess={onRefresh}
+                isLastItem={index === messages.length - 1}
+              />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
           
           {/* Floating add new section button */}
           <div className="fixed bottom-6 right-6 z-10">

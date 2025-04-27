@@ -208,12 +208,13 @@ export default function ProjectPage() {
       >
         {/* Breadcrumb */}
         <div className="flex items-center text-sm text-gray-500 mb-4">
-          <Link href={`/workspace/${workspace.id}`}>
-            <a className="hover:text-gray-900 transition-colors flex items-center">
-              <FolderIcon className="h-4 w-4 mr-1" />
-              {workspace.name}
-            </a>
-          </Link>
+          <div 
+            className="hover:text-gray-900 transition-colors flex items-center cursor-pointer"
+            onClick={() => window.location.href = `/workspace/${workspace.id}`}
+          >
+            <FolderIcon className="h-4 w-4 mr-1" />
+            {workspace.name}
+          </div>
           <ChevronRightIcon className="h-4 w-4 mx-2 text-gray-400" />
           <span className="font-medium text-gray-900">{project.name}</span>
         </div>
