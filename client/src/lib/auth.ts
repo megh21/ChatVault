@@ -68,17 +68,27 @@ export function useAuth(): AuthState & {
   const login = async (credential: string) => {
     try {
       // In a real app, you would decode the credential and get more info
-      // For now, let's simulate a Google login with mock data
+      // For now, let's use a more predictable mock data for development
       const mockGoogleProfile = {
-        email: "user@example.com",
-        name: "Example User",
-        googleId: "google-" + Math.random().toString(36).substring(2, 11),
-        avatarUrl: "https://ui-avatars.com/api/?name=Example+User&background=random"
+        email: "test@example.com",
+        name: "Test User",
+        googleId: "google-test-123",
+        avatarUrl: "https://ui-avatars.com/api/?name=Test+User&background=random"
       };
       
-      const res = await apiRequest('POST', '/api/auth/google', mockGoogleProfile);
+      // Add a retry mechanism for development
+      let retries = 3;
+      let res;
       
-      if (res.ok) {
+      while (retries > 0) {
+        res = await apiRequest('POST', '/api/auth/google', mockGoogleProfile);
+        if (res.ok) break;
+        retries--;
+        // Small delay between retries
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+      
+      if (res && res.ok) {
         const data = await res.json();
         setAuthState({
           isLoading: false,
@@ -90,9 +100,10 @@ export function useAuth(): AuthState & {
           description: `Welcome, ${data.user.displayName || data.user.email}!`,
         });
       } else {
-        throw new Error("Authentication failed");
+        throw new Error("Authentication failed after multiple attempts");
       }
     } catch (error) {
+      console.error("Login error:", error);
       toast({
         title: "Login failed",
         description: "Could not authenticate with Google. Please try again.",
@@ -128,7 +139,7 @@ export function useAuth(): AuthState & {
     
     window.google.accounts.id.initialize({
       client_id: process.env.GOOGLE_CLIENT_ID || "mock-client-id",
-      callback: async (response) => {
+      callback: async (response: { credential: string }) => {
         // In a real implementation, we would validate the token server-side
         // For this prototype, we'll just simulate a success
         if (response.credential) {

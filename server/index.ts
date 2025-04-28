@@ -1,6 +1,22 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import path from 'path';
+import fs from 'fs';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+
+// Set DATABASE_URL directly if it's not already set
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = "postgres://default:3aVlNlrAvYk7@ep-cold-hill-81569684.us-east-1.aws.neon.tech/neondb?sslmode=require";
+}
+
+// Debug environment variables
+console.log('Environment Variables:');
+console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
+console.log('NODE_ENV:', process.env.NODE_ENV);
 
 const app = express();
 app.use(express.json());

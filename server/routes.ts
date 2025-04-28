@@ -44,6 +44,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // For now, we'll just use the provided user data
       const { email, name, googleId, avatarUrl } = req.body;
       
+      // Validate required fields
+      if (!email || !googleId) {
+        console.error('Missing required fields for Google auth:', { email, googleId });
+        return res.status(400).json({ message: "Missing required fields for authentication" });
+      }
+      
+      console.log('Google auth attempt:', { email, name, googleId: googleId?.substring(0, 10) });
+      
       let user = await storage.getUserByGoogleId(googleId);
       
       if (!user) {
@@ -51,24 +59,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (!user) {
           // Create a new user
-          user = await storage.createUser({
-            username: email.split('@')[0],
-            email,
-            displayName: name,
-            avatarUrl,
-            googleId
-          });
+          console.log('Creating new user with email:', email);
+          try {
+            user = await storage.createUser({
+              username: email.split('@')[0],
+              email,
+              displayName: name || email.split('@')[0],
+              avatarUrl: avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || email)}`,
+              googleId
+            });
+          } catch (createError) {
+            console.error('Failed to create user:', createError);
+            return res.status(500).json({ message: "Failed to create user account" });
+          }
         } else {
           // Update existing user with Google ID
-          // In reality, we'd need to handle this differently
-          // but for the in-memory storage, let's just assume this works
-          user.googleId = googleId;
-          user.avatarUrl = avatarUrl || user.avatarUrl;
+          console.log('Updating existing user with Google ID');
+          try {
+            // Since we can't directly update in this example, we'll just create a new user record
+            // with the same email but with the Google ID added
+            // In a real app, you would use an UPDATE query here
+            const updatedUser = await storage.createUser({
+              username: user.username,
+              email: user.email,
+              displayName: user.displayName || name,
+              avatarUrl: avatarUrl || user.avatarUrl,
+              googleId
+            });
+            
+            if (updatedUser) {
+              user = updatedUser;
+            }
+          } catch (updateError) {
+            console.error('Error updating user with Google ID:', updateError);
+            // Fall back to using the existing user even if update fails
+          }
         }
       }
       
       // Store user ID in session
       req.session.userId = user.id;
+      
+      console.log('Authentication successful for user:', user.email);
       
       res.json({
         user: {
@@ -79,7 +111,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       });
     } catch (error) {
-      res.status(400).json({ message: "Authentication failed" });
+      console.error('Authentication failed:', error);
+      res.status(400).json({ message: "Authentication failed", error: String(error) });
     }
   });
   
