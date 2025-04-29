@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { motion } from "framer-motion";
-import { Chat, Message, Tag } from "../../shared/schema";
+import { Chat, Message, Tag } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { formatDateTime, getProviderIcon, getProviderName, getTagColor } from "@/lib/utils";
 import { fadeIn } from "@/lib/framer-animations";
@@ -36,7 +36,7 @@ export function ChatView({ chat, messages, onRefresh, isLoading = false }: ChatV
   
   if (isLoading) {
     return (
-      <div className="flex-1 flex flex-col bg-white overflow-hidden animate-pulse">
+      <div className="flex flex-col h-full overflow-hidden">
         {/* Chat Header Skeleton */}
         <div className="px-6 py-4 border-b border-gray-200 flex flex-col gap-2 sticky top-0 bg-white z-10">
           <div className="flex items-center justify-between">
@@ -102,14 +102,9 @@ export function ChatView({ chat, messages, onRefresh, isLoading = false }: ChatV
   }
   
   return (
-    <div className="flex-1 flex flex-col bg-white overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* Chat Header */}
-      <motion.div
-        className="px-6 py-4 border-b border-gray-200 flex flex-col gap-2 sticky top-0 bg-white z-10"
-        initial="hidden"
-        animate="visible"
-        variants={fadeIn}
-      >
+      <div className="flex-none px-6 py-4 border-b border-gray-200 bg-white">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-display font-bold text-gray-900">{chat.title}</h1>
           <div className="flex items-center gap-2">
@@ -176,24 +171,19 @@ export function ChatView({ chat, messages, onRefresh, isLoading = false }: ChatV
             </Button>
           </div>
         </div>
-      </motion.div>
+      </div>
       
       {/* Chat Summary */}
       {chat.summary && (
-        <motion.div
-          className="px-6 py-4 bg-gray-50 border-b border-gray-200"
-          initial="hidden"
-          animate="visible"
-          variants={fadeIn}
-        >
+        <div className="flex-none px-6 py-4 bg-gray-50 border-b border-gray-200">
           <h3 className="font-medium text-gray-700 mb-2">Summary</h3>
           <p className="text-sm text-gray-600">{chat.summary}</p>
-        </motion.div>
+        </div>
       )}
       
-      {/* Document Content Area - Inspired by Google Docs */}
-      <div className="flex-1 overflow-y-auto" style={{ height: 'calc(100vh - 150px)' }}>
-        <div className="px-6 py-4">
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="px-6 py-4 min-h-full">
           <div className="max-w-4xl mx-auto bg-white shadow-sm rounded-md p-6 mb-12">
             {messages.map((message, index) => (
               <MessageItem
@@ -205,43 +195,42 @@ export function ChatView({ chat, messages, onRefresh, isLoading = false }: ChatV
             ))}
             <div ref={messagesEndRef} />
           </div>
-          
-          {/* Floating add new section button */}
-          <div className="fixed bottom-6 right-6 z-10">
-            <Button
-              className="rounded-full h-14 w-14 bg-secondary text-white hover:bg-secondary/90 shadow-md flex items-center justify-center"
-              onClick={async () => {
-                try {
-                  await apiRequest("POST", `/api/chats/${chat.id}/messages`, {
-                    role: "user",
-                    content: "New section"
-                  });
-                  
-                  onRefresh();
-                  toast({
-                    title: "Section added",
-                    description: "A new section has been added to the document. Click on it to edit.",
-                  });
-                  
-                  // Scroll to the new section after a brief delay to allow render
-                  setTimeout(() => {
-                    if (messagesEndRef.current) {
-                      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-                    }
-                  }, 100);
-                } catch (error) {
-                  toast({
-                    title: "Failed to add section",
-                    description: "There was a problem adding a new section.",
-                    variant: "destructive"
-                  });
-                }
-              }}
-            >
-              <Plus className="h-6 w-6" />
-            </Button>
-          </div>
         </div>
+      </div>
+
+      {/* Floating Action Button */}
+      <div className="fixed bottom-6 right-6 z-10">
+        <Button
+          className="rounded-full h-14 w-14 bg-secondary text-white hover:bg-secondary/90 shadow-md flex items-center justify-center"
+          onClick={async () => {
+            try {
+              await apiRequest("POST", `/api/chats/${chat.id}/messages`, {
+                role: "user",
+                content: "New section"
+              });
+              
+              onRefresh();
+              toast({
+                title: "Section added",
+                description: "A new section has been added to the document. Click on it to edit.",
+              });
+              
+              setTimeout(() => {
+                if (messagesEndRef.current) {
+                  messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+                }
+              }, 100);
+            } catch (error) {
+              toast({
+                title: "Failed to add section",
+                description: "There was a problem adding a new section.",
+                variant: "destructive"
+              });
+            }
+          }}
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
       </div>
     </div>
   );
