@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -243,6 +243,9 @@ export function ImportChatModal({ isOpen, onClose, projectId }: ImportChatModalP
         >
           <DialogHeader>
             <DialogTitle>Import Chat</DialogTitle>
+            <DialogDescription>
+              Import your chat conversations from various AI assistants.
+            </DialogDescription>
           </DialogHeader>
           
           {step === 1 && (

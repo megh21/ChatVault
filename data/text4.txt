@@ -1,0 +1,156 @@
+
+
+import asyncio from database import Database from models import Company, Investor from matching_algo import get_embedding, generate_company_text_for_embedding, generate_investor_text_for_embedding from typing import Optional # Sample company data SAMPLE_COMPANIES = [ { "name":
+
+pasted
+
+
+import aiosqlite import json from typing import List, Optional from models import Company, Investor import numpy as np class Database: def __init__(self, db_path: str = "sharewave_db_new.sqlite"): self.db_path = db_path self.db = None async def connect(self):
+
+pasted
+
+
+import os from typing import List, Dict, Optional, Any import numpy as np import dotenv from openai import AzureOpenAI from sklearn.metrics.pairwise import cosine_similarity from models import Company, Investor, MatchResult from database import Database # Load environment variables and i
+
+pasted
+
+for my code I am creating the matching algorithm. where I have investors and companies and then want to recommend companies to investors. to do so I have written following logic. please refactor it and write  a clean code. 
+
+THERE ARE SOME BUGS THAT WHENEVER i AM creating that db with populate data, it gives error of id already exists, why is it so? can we just make it better
+
+from typing import List, Dict, Optional, Any
+from pydantic import BaseModel
+import uuid
+
+class Company(BaseModel):
+    id: str = str(uuid.uuid4())  # This generates a new UUID for each instance
+    name: str
+    industry: str
+    stage: str
+    description: str
+    location: str
+    total_valuation_usd: float
+    embedding: Optional[List[float]] = None
+
+class Investor(BaseModel):
+    id: str = str(uuid.uuid4())  # This generates a new UUID for each instance
+    name: str
+    investor_type: str
+    preferred_industries: List[str]
+    preferred_stages: List[str]
+    preferred_locations: List[str]
+    min_investment_usd: Optional[float] = None
+    max_investment_usd: Optional[float] = None
+    profile_summary: str
+    embedding: Optional[List[float]] = None
+
+class MatchResult:
+    def init(self, entity_id: str, name: str, score: float, details: Optional[dict] = None):
+        self.entity_id = entity_id
+        self.name = name
+        self.score = score
+        self.details = details or {}
+
+    def repr(self):
+        return f"Match(Name: {self.name}, Score: {self.score:.2f}, Details: {self.details})" 
+
+#database.py
+#matching_algo.py
+
+Edit
+I'll help you refactor your code and fix the issue with duplicate IDs. The problem is occurring because you're using str(uuid.uuid4()) as the default value for the ID field in your Pydantic models. This approach causes a new UUID to be generated when the model class is defined, not when an instance is created.
+
+Let's refactor your code to fix this issue and clean up the overall implementation:
+
+
+Fixed models.py
+Code 
+Now let's improve the database handling code:
+
+
+Improved database.py
+Code 
+Now let's improve the matching algorithm code:
+
+
+Improved matching_algo.py
+Code 
+Finally, let's fix the data population script:
+
+
+Fixed populate_database.py
+Code 
+Now let's create a demo script that shows the matching in action:
+
+
+demo_matching.py
+Code 
+Key Changes and Improvements
+Fixed the UUID Generation Issue:
+Changed from using str(uuid.uuid4()) as a default value to using Pydantic's Field(default_factory=generate_uuid), which correctly generates a new UUID for each instance.
+Database Operations:
+Added ON CONFLICT clauses to handle updates gracefully.
+Improved error handling and logging.
+Enhanced JSON serialization/deserialization.
+**Code
+
+
+
+
+create me a matching endpoint to my fastapi app which outputs the matches of companies
+
+Edit
+Let's create a matching endpoint for your FastAPI application that uses your matching algorithm to output company matches. This endpoint will find the best investor matches for a given company or the best company matches for a given investor.
+
+
+Matching Endpoints for FastAPI
+Code 
+Now, let's update the FastAPI app to include the matching router:
+
+
+FastAPI Main Application
+Code 
+Additionally, here's how you can test these endpoints with a simple script:
+
+
+Test Matching Endpoints
+Code 
+How to Use These Endpoints
+Get Investor Matches for a Company:
+GET /matching/company/{company_id}?limit=5&min_score=0.5
+This returns the top 5 investors that match the specified company
+The limit parameter controls how many matches to return
+The min_score parameter filters matches below a certain score
+Get Company Matches for an Investor:
+GET /matching/investor/{investor_id}?limit=5&min_score=0.5
+This returns the top 5 companies that match the specified investor
+Parameters work the same as above
+Both endpoints return a structured response with:
+
+List of matches including entity ID, name, score, and details
+Count of returned matches
+Entity type and name for context
+To integrate these endpoints with your existing FastAPI application:
+
+Save the matching endpoints code as matching_endpoints.py
+In your main application file, import and include the router
+Make sure your database connection and matching algorithm are properly configured
+Start your FastAPI server and test the endpoints
+These endpoints should work seamlessly with the database and matching algorithm code we previously refactored.
+
+
+
+
+
+
+
+
+import asyncio from database import Database from models import Company, Investor from matching_algo import get_embedding, generate_company_text_for_embedding, generate_investor_text_for_embedding from typing import Optional # Sample company data SAMPLE_COMPANIES = [ { "name":
+
+
+import aiosqlite import json from typing import List, Optional from models import Company, Investor import numpy as np class Database: def __init__(self, db_path: str = "sharewave_db_new.sqlite"): self.db_path = db_path self.db = None async def connect(self):
+
+
+import os from typing import List, Dict, Optional, Any import numpy as np import dotenv from openai import AzureOpenAI from sklearn.metrics.pairwise import cosine_similarity from models import Company, Investor, MatchResult from database import Database # Load environment variables and i
+
+

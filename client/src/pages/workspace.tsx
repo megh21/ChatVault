@@ -210,7 +210,7 @@ export default function Workspace() {
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
             <div className="flex items-center">
-              <div className={`w-3 h-3 rounded-full mr-3 bg-${workspace.color}`}></div>
+              <div className={`w-3 h-3 rounded-full mr-3 ${workspace.color ? `bg-${workspace.color}` : 'bg-accent'}`}></div>
               <h1 className="text-2xl font-bold text-gray-900 font-display">{workspace.name}</h1>
             </div>
             

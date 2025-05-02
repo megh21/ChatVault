@@ -1,0 +1,576 @@
+
+Content not accessible
+GITHUB
+
+for my task I have to submit a proper documentation and readme. the task is given as below
+
+AI Infrastructure Engineer - Coding Challenge
+Overview
+Welcome to the AI Infrastructure coding challenge! This challenge is designed to assess
+your ability to build an end-to-end product matching system that leverages Vector
+Databases, NoSQL Databases, Visual Language Models (VLMs) and Vision Foundation
+Models served using NVIDIA Triton Inference Server.
+You are expected to mock a database, implement model quantization, deploy a model, and
+design a full matching pipeline that can efficiently retrieve the closest product match for a
+given input image.
+Task Description
+Your task is to create a product matching pipeline where an input image is compared against
+stored products in a vector database and a MongoDB-based metadata store to find the
+closest match.
+Requirements
+1. Mock a Vector Database (e.g., Qdrant, FAISS, Weaviate, Chroma, or Pinecone)
+○ Store product embeddings (textual and visual) in the database.
+○ Allow efficient nearest neighbor search for retrieval.
+2. Mock a MongoDB Database to Store Product Metadata
+○ Store product images and metadata (e.g., name, category, price).
+○ Implement necessary query functions.
+3. Quantize a Visual Language Model (VLM) using TensorRT
+○ Select a VLM (preferably the popular ones like LLaVA, QwenVL, InternVL,
+Idefics ...).
+○ Select a text encoder model (e.g. BERT, SentenceEncoder, GPT....) to
+○ Select a vision encoder model (e.g. DINOv2, CLIP, ....)
+○ Perform model quantization/compilation using TensorRT.
+4. Deploy the Quantized Model Using NVIDIA Triton Inference Server
+○ Serve the quantized model via an HTTP endpoint.
+○ Ensure it supports both image and text inputs.
+5. Build the Product Matching Pipeline
+○ Given an input image, extract text+visual embeddings using the deployed
+model as well as DB info.
+○ Perform a nearest neighbor search in the vector database.
+○ Retrieve the best match along with metadata from MongoDB.
+6. Mock a MongoDB for Logging
+○ Store logs, errors, and execution results.
+○ Ensure error handling and tracking.
+Bonus Points
+● Use Docker to containerize the application.
+● Optimize latency by applying batching or caching strategies.
+● Implement multi-threading or async processing for faster inference.
+● Write clean, modular code with API documentation.
+Submission Guidelines
+● Provide a GitHub repo with a README explaining:
+● Include sample product data in the vector DB and MongoDB.
+● (Optional) Provide a live demo using a cloud-hosted instance, maybe via Gradio or
+any WebUI.
+Evaluation Criteria
+● Architecture Design – How well you structure the components.
+● Scalability & Efficiency – Use of optimized inference and retrieval.
+● Code Quality – Clean, modular, and well-documented code.
+● Correctness – The system correctly matches products.
+● Robustness – Proper handling of errors and logging.
+
+now I have already created the code shipped it to github. 
+
+help me create important things such as readme first, then we will create a documentation later.
+
+Edit
+
+Crafted comprehensive README strategy for AI product matching system.
+4s
+
+
+
+
+
+
+AI Product Matching System
+Overview
+This AI Product Matching System is an end-to-end solution that finds visually and semantically similar products based on input images. It leverages Vector Databases (FAISS), NoSQL Databases (MongoDB), and Vision-Language Models served through NVIDIA Triton Inference Server to create an efficient and scalable product matching pipeline.
+
+The system extracts both visual and textual embeddings from product images and metadata, stores them in a vector database, and enables fast similarity search for new query images. It's designed for e-commerce applications, visual product search, and recommendation systems.
+
+Architecture
+Show Image
+
+Note: The above is a placeholder image. Replace with your actual architecture diagram.
+
+The system consists of the following components:
+
+FastAPI Web Service: Handles HTTP requests and serves the main API endpoints
+MongoDB Database: Stores product metadata and information
+FAISS Vector Database: Stores and indexes product embeddings for similarity search
+Triton Inference Server: Serves the quantized AI models
+Embedding Pipeline: Combines text and vision embeddings for comprehensive product matching
+Technologies Used
+FastAPI: Web framework for the API service
+MongoDB: NoSQL database for product metadata
+FAISS: Vector database for efficient similarity search
+NVIDIA Triton Inference Server: Model serving infrastructure
+TensorRT: Model optimization and quantization
+Docker: Containerization for easy deployment
+PyMongo: MongoDB interface for Python
+PIL/Pillow: Image processing
+Transformers: Base models for text and vision encoders
+Setup and Installation
+Prerequisites
+Docker and Docker Compose
+NVIDIA GPU with CUDA support
+NVIDIA Container Toolkit
+Installation Steps
+Clone the repository:
+bash
+git clone https://github.com/yourusername/product-matching-system.git
+cd product-matching-system
+Download the pre-trained models (optional - system will download them automatically):
+bash
+# Text encoder model
+mkdir -p model_repository/text_encoder/1
+# Vision encoder model
+mkdir -p model_repository/internvl3_vision/1
+# Other model components
+mkdir -p model_repository/image_encoder/1
+Start the services using Docker Compose:
+bash
+docker-compose up -d
+Verify that all services are running:
+bash
+docker-compose ps
+Usage
+API Endpoints
+POST /api/match: Upload an image to find similar products
+Request: Form data with image file and optional name field
+Response: JSON with matched products and similarity scores
+GET /health: Check the health of the system components
+GET /sync_check: Verify that MongoDB and FAISS databases are in sync
+Example Request
+bash
+curl -X POST "http://localhost:8000/api/match" \
+  -H "accept: application/json" \
+  -H "Content-Type: multipart/form-data" \
+  -F "image=@/path/to/product_image.jpg" \
+  -F "name=Query Product"
+Example Response
+json
+{
+  "matches": [
+    {
+      "product": {
+        "product_id": 12345,
+        "name": "Blue Cotton T-Shirt",
+        "image_url": "http://example.com/images/12345.jpg",
+        "metadata": {
+          "gender": "Men",
+          "masterCategory": "Apparel",
+          "subCategory": "Topwear",
+          "articleType": "Tshirts",
+          "baseColour": "Blue",
+          "season": "Summer",
+          "year": 2023,
+          "usage": "Casual"
+        }
+      },
+      "similarity_score": 0.89
+    },
+    {
+      "product": {
+        "product_id": 12346,
+        "name": "Navy Blue Cotton T-Shirt",
+        "image_url": "http://example.com/images/12346.jpg",
+        "metadata": {
+          "gender": "Men",
+          "masterCategory": "Apparel",
+          "subCategory": "Topwear",
+          "articleType": "Tshirts",
+          "baseColour": "Navy Blue",
+          "season": "Summer",
+          "year": 2023,
+          "usage": "Casual"
+        }
+      },
+      "similarity_score": 0.85
+    }
+  ],
+  "query": {
+    "name": "Query Product"
+  }
+}
+Project Structure
+/
+├── docker-compose.yml        # Docker Compose configuration
+├── docker/
+│   └── Dockerfile            # Main Dockerfile
+├── main.py                   # FastAPI application entry point
+├── model.py                  # Data models and schemas
+├── mongo.py                  # MongoDB connection and operations
+├── ingest.py                 # Data ingestion pipeline
+├── vectordb/
+│   └── vector_db.py          # FAISS vector database operations
+├── services/
+│   ├── __init__.py
+│   ├── embeddings.py         # Embedding dispatcher
+│   ├── embeddings_local.py   # Local embedding service with Triton
+│   └── embedding_v_zero.py   # Cloud embedding service
+├── model_repository/         # Triton model repository
+│   ├── image_encoder/
+│   ├── text_encoder/
+│   ├── internvl3_vision/
+│   └── internvl3_language/
+├── tensorrt/                 # TensorRT model conversion scripts
+│   ├── export/               # ONNX export scripts
+│   ├── calibrate/            # Calibration scripts for INT8 quantization
+│   └── build_engine.py       # Engine building scripts
+├── triton_run.sh             # Triton server startup script
+└── requirements.txt          # Python dependencies
+Implementation Details
+1. MongoDB Database
+The system uses MongoDB to store product metadata, including product ID, name, image path, and detailed product attributes. The database is optimized for fast retrieval of product information based on product IDs.
+
+2. Vector Database (FAISS)
+FAISS is used to store and search product embeddings. The system supports:
+
+L2 distance-based similarity search
+Batch indexing for efficient loading
+Conversion from distance to similarity scores
+3. Embedding Generation
+The system supports two modes for embedding generation:
+
+Local mode: Uses Triton Inference Server with quantized models
+Cloud mode: Uses cloud API services when local GPU resources are limited
+4. Model Quantization
+The system includes scripts for:
+
+ONNX model export from PyTorch models
+INT8 calibration for vision and text encoders
+TensorRT engine building with FP16 and INT8 precision
+5. Triton Inference Server
+Models are served using NVIDIA Triton Inference Server with:
+
+Dynamic batching enabled
+Optimization for GPU inference
+Multiple model instances for concurrent processing
+6. Optimizations
+Caching: LRU cache for frequently accessed products
+Asynchronous Processing: Async endpoints for non-blocking operations
+Batch Processing: Efficient batch processing for embedding generation
+Error Handling: Robust error handling with retries for transient failures
+Performance Considerations
+Vector Database: FAISS index is loaded into memory for fast search operations
+Embedding Generation: The most compute-intensive part, optimized with batching
+Quantization: INT8 quantization reduces memory footprint and improves inference speed
+Caching: Frequently accessed products are cached to reduce database load
+Concurrency: Async operations allow processing multiple requests concurrently
+Future Improvements
+Potential enhancements to the system include:
+
+Distributed Vector Database: For handling larger product catalogs
+A/B Testing Framework: For comparing different embedding models
+Real-time Model Updates: Hot-swapping models without downtime
+Advanced Filtering: Combining vector search with metadata filtering
+Multi-modal Queries: Supporting text-to-image and image-to-text searches
+User Feedback Loop: Incorporating user feedback to improve matching
+License
+[Specify your license here]
+
+For detailed technical documentation, please refer to the docs directory.
+
+
+AI Product Matching System Architecture
+Interactive artifact 
+Now I'll create comprehensive documentation for your AI Product Matching System project.
+
+
+AI Product Matching System - Documentation
+Document 
+
+Docker Setup Guide
+Document 
+
+API Usage Guidelines
+Document 
+
+System Architecture Diagram
+Diagram 
+I've prepared a comprehensive set of documentation for your AI Product Matching System project. Let me walk you through what I've created:
+
+1. README.md
+This is the primary document that provides an overview of your project. It includes:
+
+Project overview explaining the purpose and functionality
+Architecture description
+Technologies used
+Setup and installation instructions
+Usage examples
+Project structure
+Implementation details
+Performance considerations
+Future improvements
+The README is designed to be concise yet informative, giving viewers a clear understanding of your project at a glance.
+
+2. Technical Documentation
+This comprehensive document covers the technical details of your implementation:
+
+Detailed system architecture
+Component breakdowns
+Data flows
+Implementation details of key components
+MongoDB integration
+FAISS vector database implementation
+Embedding generation
+Triton Inference Server integration
+TensorRT optimization
+API implementation
+Optimization features (caching, async processing, batch processing)
+Docker deployment
+Model configuration
+API endpoint documentation
+Configuration options
+Troubleshooting guide
+This document is intended for developers who want to understand the technical aspects of your system.
+
+3. Docker Setup Guide
+This guide provides detailed instructions for setting up and running your system using Docker, including:
+
+Prerequisites
+System requirements
+Container structure
+Step-by-step setup instructions
+TensorRT model building instructions
+Data ingestion process
+Container management commands
+Resource monitoring and adjustment
+Troubleshooting common issues
+Backup and restore procedures
+Security considerations
+Performance tuning tips
+4. API Usage Guidelines
+This guide explains how to integrate with your API:
+
+Base URL information
+Authentication notes
+Detailed API endpoint documentation
+Request and response formats with examples
+Status codes and error handling
+Best practices for using the API
+Image requirements
+Rate limiting information
+Performance considerations
+JavaScript integration example
+Troubleshooting common API issues
+5. System Architecture Diagrams
+I've created two visualizations of your system architecture:
+
+A React-based interactive diagram that shows the components and their relationships
+A Mermaid-based flowchart that illustrates the data flow through the system
+These diagrams help visualize how the components interact and make the system easier to understand.
+
+All of these documents together provide a comprehensive picture of your AI Product Matching System, covering both high-level concepts and detailed technical implementations. The documentation is structured to be approachable for different audiences, from developers who want to contribute to the codebase to users who just want to interact with the API.
+
+Would you like me to modify or expand any of these documents, or would you like additional documentation on specific aspects of the system?
+
+
+
+
+Retry
+An error occurred while trying to run the generated artifact.
+Cannot access 'componentStyle' before initialization
+
+  Can you fix this error in architecture_diagram?
+
+Edit
+
+Diagnosed variable initialization error in React component styles.
+3s
+
+
+
+
+
+
+I apologize for the error in the architecture diagram. Let me fix that issue with the componentStyle variable:
+
+
+AI Product Matching System Architecture
+Interactive artifact ∙ Version 2 
+
+AI Product Matching System Architecture
+Interactive artifact ∙ Version 3 
+
+AI Product Matching System Architecture
+Interactive artifact ∙ Version 4 
+I've fixed the architecture diagram artifact. The error was occurring because I was trying to access the componentStyle.base property during the definition of the componentStyle object itself, which isn't allowed in JavaScript.
+
+The solution was to:
+
+Define the base style as a separate variable (componentBaseStyle)
+Use that base style when defining the component-specific styles
+Update all references to componentStyle.base to use either the specific component styles or the base style directly
+The architecture diagram should now render correctly without the initialization error. It visually represents the flow of your AI Product Matching System, showing how the components connect from client request through the FastAPI service, Triton Inference Server, and the database layers, culminating in the product matching results.
+
+Is there anything else you'd like me to explain or modify about the documentation I've prepared for your project?
+
+
+
+
+Retry
+An error occurred while trying to run the generated artifact.
+Cannot access 'componentStyle' before initialization
+
+  Can you fix this error in architecture_diagram?
+
+Edit
+
+Diagnosed and strategized comprehensive fix for component initialization error.
+2s
+
+
+
+
+
+I apologize for the continued error. Let me completely rewrite the architecture diagram to fix the issue:
+
+
+AI Product Matching System Architecture
+Interactive artifact ∙ Version 5 
+I apologize for the persistent error. I've completely rewritten the architecture diagram component to fix the issue.
+
+Instead of trying to define and use style objects (which was causing the reference error), I've taken a simpler approach by directly applying the Tailwind CSS classes to each element. This eliminates any potential variable references before initialization.
+
+The diagram now shows:
+
+The client making an image upload request
+The FastAPI web service receiving the request
+The Triton Inference Server with text and vision encoders
+The embedding generation process that combines features
+The storage layer with MongoDB and FAISS Vector Database
+The final product matching results
+Each component is color-coded for better visual distinction:
+
+Blue: Client-facing components
+Orange: Web service
+Purple: AI models/Triton server
+Yellow: Processing components
+Green: MongoDB database
+Red: FAISS vector database
+The diagram should now render correctly without any initialization errors.
+
+
+
+
+Retry
+megh21/product-match-server
+main
+
+GITHUB
+
+so based on this, I am not able to understand, how can we add together the image embeddings and word embeddings together. and how can It find from vector db, the correct product. for example at time of ingest we saved text and image of each product combined together right? in that case at inference if we onnly send text query or only image querry can it still find good matches or results?
+
+Edit
+
+Analyzed embedding fusion and vector search for multimodal product matching.
+17s
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Based on the code provided, I can explain how the image and text embeddings are combined and how the vector search works, including what happens with text-only or image-only queries.
+
+How Embeddings Are Combined
+The system concatenates (joins) the text and image embeddings rather than using more complex fusion methods. Looking at the key embedding generation code:
+
+Cloud Mode (using Cohere API)
+From embedding_v_zero.py and embeddings.py:
+
+python
+def get_combined_embedding(text: str, image: Image.Image) -> np.ndarray:
+    # Get text embedding (1024-dim)
+    text_emb = _get_text_embedding(text)
+    # Get image embedding (1024-dim)
+    image_emb = _get_vision_embedding([image])
+    # Concatenate them to create combined embedding (2048-dim)
+    result = np.concatenate([text_emb, image_emb])
+    return result
+Local Mode (using Triton Inference Server)
+From embeddings_local.py:
+
+python
+def get_combined_embedding(text: str, image: Image.Image) -> np.ndarray:
+    text_emb = get_text_embedding([text])
+    image_emb = get_vision_embedding([image])
+    # Concatenate along the feature dimension (axis=1)
+    combined = np.concatenate([text_emb, image_emb], axis=1)
+    return combined  # Shape (1, text_dim + vision_dim)
+During ingestion, each product's text (name) and image are processed to create a combined embedding vector, which is then stored in the FAISS index. This is a simple concatenation - the vectors are joined end-to-end.
+
+How Matching Works with Partial Information
+The current API implementation in main.py always expects both modalities:
+
+python
+@app.post("/api/match")
+async def match_product(
+    image: UploadFile = File(...),  # Required
+    name: str = "Query Product",    # Has default value
+    # ...
+):
+    # Generate embedding for the query
+    query_emb = get_combined_embedding(name, img)
+    # Perform FAISS search
+    search_results = await search_faiss_async(query_emb, k=5)
+Here's what happens in different scenarios:
+
+1. Text-Only Query
+While the system doesn't have a dedicated endpoint for text-only queries, it technically could work with:
+
+A default/placeholder image (the API requires an image)
+The user's text query
+The issue is that half of the embedding vector (the image part) would not match well with the indexed vectors, likely resulting in poorer matches than if both modalities were provided.
+
+2. Image-Only Query
+For image-only queries:
+
+The system uses a default name ("Query Product" is the default)
+The image is processed normally
+This would be similar to text-only in that half the embedding (the text part) doesn't contain meaningful query information, potentially reducing match quality.
+
+3. Both Text and Image
+This is the intended use case where both parts of the embedding contain relevant search information, leading to the best matches.
+
+Technical Implications
+The simple concatenation approach has important implications:
+
+Distance Calculation: When performing nearest neighbor search, the FAISS index calculates distance across the entire vector. If half the vector doesn't contain meaningful query information, it adds "noise" to the distance calculation.
+No Weighting Between Modalities: The current implementation doesn't have a mechanism to prioritize text over image or vice versa. Both contribute equally to the similarity calculation.
+No Special Handling for Missing Data: The API doesn't have specialized endpoints or processing for text-only or image-only queries.
+How to Improve Support for Partial Queries
+To better support text-only or image-only queries, you could modify the system to:
+
+Create Separate Indices: Maintain separate FAISS indices for text embeddings, image embeddings, and combined embeddings.
+Add Specialized Endpoints: Create dedicated API endpoints for text-only and image-only searches.
+Implement Weighting Mechanism:
+python
+def weighted_combined_embedding(text=None, image=None, text_weight=0.5):
+    if text and image:
+        text_emb = get_text_embedding(text)
+        image_emb = get_vision_embedding(image)
+        return np.concatenate([text_emb * text_weight, image_emb * (1-text_weight)])
+    elif text:
+        text_emb = get_text_embedding(text)
+        # Create zero/placeholder for image part
+        return np.concatenate([text_emb, np.zeros(IMAGE_DIM)])
+    elif image:
+        image_emb = get_vision_embedding(image)
+        # Create zero/placeholder for text part
+        return np.concatenate([np.zeros(TEXT_DIM), image_emb])
+Use Modal-Specific Distance Functions: Custom distance functions that only consider the relevant parts of the embedding.
+In your current implementation, partial queries will work but likely with reduced accuracy compared to providing both modalities, as the vector search doesn't have special handling for missing modalities.
+
+
+
+
+Retry
+
+Some of your content could not be loaded.Show 1 Item
+
+
+
+
+
+

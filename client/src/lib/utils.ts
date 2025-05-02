@@ -60,28 +60,28 @@ export function parseChat(content: string, provider: ChatProvider): { role: Mess
   if (provider === "chatgpt") {
     // ChatGPT format usually has "User:" and "ChatGPT:" prefixes
     lines.forEach(line => {
-      if (line.startsWith("User:") || line.startsWith("You:")) {
+      if (line.trim().match(/^(User|You):\s*/i)) {
         if (currentRole) {
           messages.push({
             role: currentRole,
-            content: currentContent.join("\n"),
+            content: currentContent.join("\n").trim(),
             timestamp: new Date()
           });
           currentContent = [];
         }
         currentRole = "user";
-        currentContent.push(line.replace(/^(User:|You:)\s*/, ""));
-      } else if (line.startsWith("ChatGPT:") || line.startsWith("Assistant:")) {
+        currentContent.push(line.replace(/^(User|You):\s*/i, ""));
+      } else if (line.trim().match(/^(ChatGPT|Assistant|AI):\s*/i)) {
         if (currentRole) {
           messages.push({
             role: currentRole,
-            content: currentContent.join("\n"),
+            content: currentContent.join("\n").trim(),
             timestamp: new Date()
           });
           currentContent = [];
         }
         currentRole = "assistant";
-        currentContent.push(line.replace(/^(ChatGPT:|Assistant:)\s*/, ""));
+        currentContent.push(line.replace(/^(ChatGPT|Assistant|AI):\s*/i, ""));
       } else {
         currentContent.push(line);
       }
@@ -89,28 +89,28 @@ export function parseChat(content: string, provider: ChatProvider): { role: Mess
   } else if (provider === "claude") {
     // Claude format usually has "Human:" and "Claude:" prefixes
     lines.forEach(line => {
-      if (line.startsWith("Human:") || line.startsWith("You:")) {
+      if (line.trim().match(/^(Human|You):\s*/i)) {
         if (currentRole) {
           messages.push({
             role: currentRole,
-            content: currentContent.join("\n"),
+            content: currentContent.join("\n").trim(),
             timestamp: new Date()
           });
           currentContent = [];
         }
         currentRole = "user";
-        currentContent.push(line.replace(/^(Human:|You:)\s*/, ""));
-      } else if (line.startsWith("Claude:") || line.startsWith("Assistant:")) {
+        currentContent.push(line.replace(/^(Human|You):\s*/i, ""));
+      } else if (line.trim().match(/^(Claude|Assistant|AI):\s*/i)) {
         if (currentRole) {
           messages.push({
             role: currentRole,
-            content: currentContent.join("\n"),
+            content: currentContent.join("\n").trim(),
             timestamp: new Date()
           });
           currentContent = [];
         }
         currentRole = "assistant";
-        currentContent.push(line.replace(/^(Claude:|Assistant:)\s*/, ""));
+        currentContent.push(line.replace(/^(Claude|Assistant|AI):\s*/i, ""));
       } else {
         currentContent.push(line);
       }
@@ -122,9 +122,9 @@ export function parseChat(content: string, provider: ChatProvider): { role: Mess
     
     // First pass: detect role patterns
     lines.forEach(line => {
-      if (line.match(/^(User|You|Human|I):/i)) {
+      if (line.trim().match(/^(User|You|Human|I):\s*/i)) {
         userRoleDetected = true;
-      } else if (line.match(/^(Assistant|AI|ChatGPT|Claude|Grok):/i)) {
+      } else if (line.trim().match(/^(Assistant|AI|ChatGPT|Claude|Grok):\s*/i)) {
         aiRoleDetected = true;
       }
     });
@@ -132,22 +132,22 @@ export function parseChat(content: string, provider: ChatProvider): { role: Mess
     // Second pass: parse messages based on detected patterns
     if (userRoleDetected && aiRoleDetected) {
       lines.forEach(line => {
-        if (line.match(/^(User|You|Human|I):/i)) {
+        if (line.trim().match(/^(User|You|Human|I):\s*/i)) {
           if (currentRole) {
             messages.push({
               role: currentRole,
-              content: currentContent.join("\n"),
+              content: currentContent.join("\n").trim(),
               timestamp: new Date()
             });
             currentContent = [];
           }
           currentRole = "user";
           currentContent.push(line.replace(/^(User|You|Human|I):\s*/i, ""));
-        } else if (line.match(/^(Assistant|AI|ChatGPT|Claude|Grok):/i)) {
+        } else if (line.trim().match(/^(Assistant|AI|ChatGPT|Claude|Grok):\s*/i)) {
           if (currentRole) {
             messages.push({
               role: currentRole,
-              content: currentContent.join("\n"),
+              content: currentContent.join("\n").trim(),
               timestamp: new Date()
             });
             currentContent = [];
@@ -159,31 +159,35 @@ export function parseChat(content: string, provider: ChatProvider): { role: Mess
         }
       });
     } else {
-      // Alternate user/assistant messages if no clear pattern is detected
-      let isUser = true;
-      let currentMessage = "";
+      // Try to parse as alternating user/assistant messages separated by blank lines
+      let paragraphs: string[] = [];
+      let currentParagraph = "";
       
+      // Group lines into paragraphs separated by blank lines
       lines.forEach(line => {
         if (line.trim() === "") {
-          if (currentMessage) {
-            messages.push({
-              role: isUser ? "user" : "assistant",
-              content: currentMessage,
-              timestamp: new Date()
-            });
-            currentMessage = "";
-            isUser = !isUser;
+          if (currentParagraph.trim()) {
+            paragraphs.push(currentParagraph.trim());
+            currentParagraph = "";
           }
         } else {
-          currentMessage += (currentMessage ? "\n" : "") + line;
+          currentParagraph += (currentParagraph ? "\n" : "") + line;
         }
       });
       
-      if (currentMessage) {
-        messages.push({
-          role: isUser ? "user" : "assistant",
-          content: currentMessage,
-          timestamp: new Date()
+      // Add the last paragraph if there is one
+      if (currentParagraph.trim()) {
+        paragraphs.push(currentParagraph.trim());
+      }
+      
+      // Convert paragraphs to alternating user/assistant messages
+      if (paragraphs.length > 0) {
+        paragraphs.forEach((paragraph, index) => {
+          messages.push({
+            role: index % 2 === 0 ? "user" : "assistant",
+            content: paragraph,
+            timestamp: new Date()
+          });
         });
       }
     }
@@ -193,7 +197,16 @@ export function parseChat(content: string, provider: ChatProvider): { role: Mess
   if (currentRole && currentContent.length > 0) {
     messages.push({
       role: currentRole,
-      content: currentContent.join("\n"),
+      content: currentContent.join("\n").trim(),
+      timestamp: new Date()
+    });
+  }
+  
+  // If no messages were detected, create a default user message with the entire content
+  if (messages.length === 0 && content.trim()) {
+    messages.push({
+      role: "user",
+      content: content.trim(),
       timestamp: new Date()
     });
   }
@@ -242,13 +255,13 @@ export function getTagColor(tagName: string): string {
 }
 
 export function getWorkspaceColor(colorName: string): string {
-  const colorMap: Record<string, { bg: string; dot: string }> = {
-    accent: { bg: "bg-accent/10", dot: "bg-accent" },
-    secondary: { bg: "bg-secondary/10", dot: "bg-secondary" },
-    highlight: { bg: "bg-highlight/10", dot: "bg-highlight" },
-    neutralLight: { bg: "bg-neutral-light/10", dot: "bg-neutral-light" },
-    neutralDark: { bg: "bg-neutral-dark/10", dot: "bg-neutral-dark" },
-    primary: { bg: "bg-primary/10", dot: "bg-primary" }
+  const colorMap: Record<string, string> = {
+    accent: "bg-accent/10",
+    secondary: "bg-secondary/10",
+    highlight: "bg-highlight/10", 
+    neutralLight: "bg-neutral-light/10",
+    neutralDark: "bg-neutral-dark/10",
+    primary: "bg-primary/10"
   };
   
   return colorMap[colorName] || colorMap.accent;
